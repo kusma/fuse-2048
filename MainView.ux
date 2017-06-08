@@ -1,0 +1,196 @@
+<App Background="#faf8ef">
+        <JavaScript>
+                var Observable = require("FuseJS/Observable");
+
+                function colorFromValue(value)
+                {
+                        value = Math.floor(Math.log2(value)) | 0;
+                        switch (value) {
+                        case 1:
+                                return "#eee4da";
+                        case 2:
+                                return "#ede0c8";
+                        case 3:
+                                return "#f2b179";
+                        case 4:
+                                return "#f59563";
+                        case 5:
+                                return "#f67c5f";
+                        }
+                }
+
+                var tiles = Observable();
+
+                function prepareGrid() {
+                        var grid = Array.apply(null, Array(4 * 4)).map(function() { return -1 });
+                        tiles.forEach(function(tile, index) {
+                                var gridIndex = tile.y.value * 4 + tile.x.value;
+                                if (grid[gridIndex] != -1)
+                                        throw Error("multiple grid indices in the same location!");
+                                grid[gridIndex] = index;
+                        });
+                        return grid;
+                }
+
+                function spawnNewTile(grid)
+                {
+                        var value = Math.random() < 0.9 ? 2 : 4;
+                        var randomIndex = Math.floor(Math.random() * 4 * 4) | 0;
+                        var pos = null;
+                        for (i = 0; i < 16; ++i) {
+                                var index = (randomIndex + i) % (4 * 4);
+                                if (grid[index] == -1) {
+                                        pos = [index % 4, Math.floor(index / 4) | 0];
+                                        break;
+                                }
+                        }
+
+                        if (pos[1] == null) {
+                                console.log("EEEK, no more positions!");
+                                return;
+                        }
+
+                        if (grid[pos[1] * 4 + pos[0]] != -1) {
+                                console.log("EEEK, not empty position!");
+                                return;
+                        }
+
+                        tiles.add({
+                                value: Observable(value), color : Observable(colorFromValue(value)), x : Observable(pos[0]), y : Observable(pos[1])
+                        });
+                }
+
+                var grid = prepareGrid();
+                spawnNewTile(grid);
+                spawnNewTile(grid);
+
+                function move(dx, dy) {
+                        var grid = prepareGrid();
+
+                        var x = [];
+                        var y = [];
+                        for (var i = 0; i < 4; ++i) {
+                                x.push(i);
+                                y.push(i);
+                        }
+                        if (dx > 0)
+                                x = x.reverse();
+                        if (dy > 0)
+                                y = y.reverse();
+
+                        var removeList = []; // collect removals until the end to not mess with indices
+                        x.forEach(function (x) {
+                                y.forEach(function (y) {
+                                        var tileIndex = grid[y * 4 + x];
+                                        if (tileIndex >= 0) {
+                                                var tile = tiles.getAt(tileIndex);
+
+                                                // scan for furthest possible move
+                                                var nx = tile.x.value;
+                                                var ny = tile.y.value;
+                                                while (true) {
+                                                        var cx = Math.min(Math.max(nx + dx, 0), 3);
+                                                        var cy = Math.min(Math.max(ny + dy, 0), 3);
+                                                        if ((cx == nx && cy == ny) || grid[cy * 4 + cx] != -1)
+                                                                break;
+                                                        nx = cx;
+                                                        ny = cy;
+                                                }
+
+                                                // step one more time to check for merging
+                                                var mx = Math.min(Math.max(nx + dx, 0), 3);
+                                                var my = Math.min(Math.max(ny + dy, 0), 3);
+
+                                                if (mx != nx || my != ny) {
+                                                        var oldTileIndex = my * 4 + mx;
+                                                        if (grid[oldTileIndex] != -1) {
+                                                                var oldTile = tiles.getAt(grid[oldTileIndex]);
+                                                                if (tile.value.value === oldTile.value.value) {
+                                                                        tile.value.value += oldTile.value.value;
+                                                                        tile.color.value = colorFromValue(tile.value.value);
+                                                                        removeList.push(oldTile);
+
+                                                                        nx = mx;
+                                                                        ny = my;
+                                                                }
+                                                        }
+                                                }
+
+                                                tile.x.value = nx;
+                                                tile.y.value = ny;
+
+                                                grid[y * 4 + x] = -1;
+                                                grid[ny * 4 + nx] = tileIndex;
+                                        }
+                                });
+                        });
+
+                        removeList.forEach(function(tile){
+                                tiles.remove(tile);
+                        })
+                        spawnNewTile(grid);
+                }
+
+                module.exports = {
+                        tiles : tiles,
+                        swipeLeft  : function() { move(-1, 0); },
+                        swipeRight : function() { move( 1, 0); },
+                        swipeUp    : function() { move(0, -1); },
+                        swipeDown  : function() { move(0,  1); }
+                };
+        </JavaScript>
+
+        <Rectangle ux:Class="Tile" CornerRadius="3" />
+        <Tile ux:Class="BackgroundTile" Color="#cdc1b4" />
+
+        <Panel Width="350" Height="350">
+                <!-- Tiles -->
+                <Grid RowCount="4" ColumnCount="4" CellSpacing="10" Margin="10">
+                        <Each Items="{tiles}" >
+                                <Tile ux:Name="newPos" Column="{x}" Row="{y}" Color="{color}">
+                                        <Text Value="{value}" FontSize="50" TextTruncation="None" Alignment="Center" />
+                                        <LayoutAnimation>
+                                                <Move X="1" Y="1" RelativeTo="PositionChange" Duration="0.1"/>
+                                        </LayoutAnimation>
+                                        <AddingAnimation>
+                                                <Scale Factor="0" Duration="0.2"/>
+                                        </AddingAnimation>
+                                        <RemovingAnimation>
+                                                <Scale Factor="0.5" Duration="0.1"/>
+                                        </RemovingAnimation>
+                                </Tile>
+                        </Each>
+                </Grid>
+
+                <!-- Playfield -->
+                <Grid RowCount="4" ColumnCount="4" CellSpacing="10" Margin="10">
+                        <Each Count="4 * 4">
+                                <BackgroundTile />
+                        </Each>
+                </Grid>
+                <Rectangle CornerRadius="5" Color="#bbada0" />
+
+
+                <!-- Gestures -->
+
+                <SwipeGesture ux:Name="swipeLeft" Direction="Left" Length="25" Type="Auto" />
+                <Swiped Source="swipeLeft" >
+                        <Callback Handler="{swipeLeft}" />
+                </Swiped>
+
+                <SwipeGesture ux:Name="swipeRight" Direction="Right" Length="25" Type="Auto" />
+                <Swiped Source="swipeRight" >
+                        <Callback Handler="{swipeRight}" />
+                </Swiped>
+
+                <SwipeGesture ux:Name="swipeUp" Direction="Up" Length="25" Type="Auto" />
+                <Swiped Source="swipeUp" >
+                        <Callback Handler="{swipeUp}" />
+                </Swiped>
+
+                <SwipeGesture ux:Name="swipeDown" Direction="Down" Length="25" Type="Auto" />
+                <Swiped Source="swipeDown" >
+                        <Callback Handler="{swipeDown}" />
+                </Swiped>
+        </Panel>
+</App>
