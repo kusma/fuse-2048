@@ -19,6 +19,7 @@
                         }
                 }
 
+                var score = Observable();
                 var tiles = Observable();
 
                 function prepareGrid() {
@@ -107,6 +108,7 @@
                                                                 if (tile.value.value === oldTile.value.value) {
                                                                         tile.value.value += oldTile.value.value;
                                                                         tile.color.value = colorFromValue(tile.value.value);
+                                                                        score.value += tile.value.value;
                                                                         removeList.push(oldTile);
                                                                         mergedNow.push(tileIndex);
 
@@ -139,6 +141,7 @@
 
                 function newGame()
                 {
+                        score.value = 0;
                         tiles.clear();
 
                         var grid = prepareGrid();
@@ -149,6 +152,7 @@
                 newGame();
 
                 module.exports = {
+                        score : score,
                         tiles : tiles,
                         newGame : newGame,
                         swipeLeft  : function() { move(-1, 0); },
@@ -215,11 +219,16 @@
                         </Swiped>
 
                 </Panel>
-                <Rectangle Dock="Bottom" Color="White">
-                        <Text Value="New Game" />
-                        <Clicked>
-                                <Callback Handler="{newGame}" />
-                        </Clicked>
-                </Rectangle>
+                <Panel Dock="Bottom">
+                        <StackPanel>
+                                <Rectangle Dock="Bottom" Color="White">
+                                        <Text Value="New Game" />
+                                        <Clicked>
+                                                <Callback Handler="{newGame}" />
+                                        </Clicked>
+                                </Rectangle>
+                                <Text Value="Score: {score}" />
+                        </StackPanel>
+                </Panel>
         </DockPanel>
 </App>
