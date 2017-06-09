@@ -104,9 +104,9 @@
                                                 var my = Math.min(Math.max(ny + dy, 0), 3);
 
                                                 if (mx != nx || my != ny) {
-                                                        var oldTileIndex = my * 4 + mx;
-                                                        if (grid[oldTileIndex] != -1 && !mergedNow.includes(tileIndex)) {
-                                                                var oldTile = tiles.getAt(grid[oldTileIndex]);
+                                                        var oldTileIndex = grid[my * 4 + mx];
+                                                        if (oldTileIndex != -1 && !mergedNow.includes(tileIndex)) {
+                                                                var oldTile = tiles.getAt(oldTileIndex);
                                                                 if (tile.value.value === oldTile.value.value) {
                                                                         tile.value.value += oldTile.value.value;
                                                                         tile.color.value = colorFromValue(tile.value.value);
