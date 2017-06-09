@@ -149,25 +149,27 @@
                 };
         </JavaScript>
 
-        <Rectangle ux:Class="Tile" CornerRadius="3" CachingMode="Never" />
-        <Tile ux:Class="BackgroundTile" Color="#cdc1b4" />
+        <Rectangle ux:Class="TileBase" CornerRadius="3" CachingMode="Never" />
+        <TileBase ux:Class="BackgroundTile" Color="#cdc1b4" />
+        <TileBase ux:Class="Tile">
+                <string ux:Property="Value" />
+                <Text Value="{ReadProperty Value}" FontSize="50" TextTruncation="None" Alignment="Center" />
+                <LayoutAnimation CrossFadeDuration="0">
+                        <Move X="1" Y="1" RelativeTo="PositionChange" Duration="0.1"/>
+                </LayoutAnimation>
+                <AddingAnimation>
+                        <Scale Factor="0" Duration="0.2"/>
+                </AddingAnimation>
+                <RemovingAnimation>
+                        <Scale Factor="0.5" Duration="0.1"/>
+                </RemovingAnimation>
+        </TileBase>
 
         <Panel Width="350" Height="350">
                 <!-- Tiles -->
                 <Grid RowCount="4" ColumnCount="4" CellSpacing="10" Margin="10">
                         <Each Items="{tiles}" >
-                                <Tile ux:Name="newPos" Column="{x}" Row="{y}" Color="{color}">
-                                        <Text Value="{value}" FontSize="50" TextTruncation="None" Alignment="Center" />
-                                        <LayoutAnimation>
-                                                <Move X="1" Y="1" RelativeTo="PositionChange" Duration="0.1"/>
-                                        </LayoutAnimation>
-                                        <AddingAnimation>
-                                                <Scale Factor="0" Duration="0.2"/>
-                                        </AddingAnimation>
-                                        <RemovingAnimation>
-                                                <Scale Factor="0.5" Duration="0.1"/>
-                                        </RemovingAnimation>
-                                </Tile>
+                                <Tile Column="{x}" Row="{y}" Color="{color}" Value="{value}" />
                         </Each>
                 </Grid>
 
