@@ -78,6 +78,7 @@
                         if (dy > 0)
                                 y = y.reverse();
 
+                        var moved = false;
                         var removeList = []; // collect removals until the end to not mess with indices
                         x.forEach(function (x) {
                                 y.forEach(function (y) {
@@ -116,11 +117,15 @@
                                                         }
                                                 }
 
-                                                tile.x.value = nx;
-                                                tile.y.value = ny;
+                                                if (tile.x.value != nx || tile.y.value != ny) {
+                                                        moved = true;
 
-                                                grid[y * 4 + x] = -1;
-                                                grid[ny * 4 + nx] = tileIndex;
+                                                        tile.x.value = nx;
+                                                        tile.y.value = ny;
+
+                                                        grid[y * 4 + x] = -1;
+                                                        grid[ny * 4 + nx] = tileIndex;
+                                                }
                                         }
                                 });
                         });
@@ -128,7 +133,9 @@
                         removeList.forEach(function(tile){
                                 tiles.remove(tile);
                         })
-                        spawnNewTile(grid);
+
+                        if (moved)
+                                spawnNewTile(grid);
                 }
 
                 module.exports = {
