@@ -61,10 +61,6 @@
                         grid[pos[1] * 4 + pos[0]] = tiles.length;
                 }
 
-                var grid = prepareGrid();
-                spawnNewTile(grid);
-                spawnNewTile(grid);
-
                 function move(dx, dy) {
                         var grid = prepareGrid();
 
@@ -141,8 +137,20 @@
                                 spawnNewTile(grid);
                 }
 
+                function newGame()
+                {
+                        tiles.clear();
+
+                        var grid = prepareGrid();
+                        spawnNewTile(grid);
+                        spawnNewTile(grid);
+                }
+
+                newGame();
+
                 module.exports = {
                         tiles : tiles,
+                        newGame : newGame,
                         swipeLeft  : function() { move(-1, 0); },
                         swipeRight : function() { move( 1, 0); },
                         swipeUp    : function() { move(0, -1); },
@@ -166,43 +174,52 @@
                 </RemovingAnimation>
         </TileBase>
 
-        <Panel Width="350" Height="350">
-                <!-- Tiles -->
-                <Grid RowCount="4" ColumnCount="4" CellSpacing="10" Margin="10">
-                        <Each Items="{tiles}" >
-                                <Tile Column="{x}" Row="{y}" Color="{color}" Value="{value}" />
-                        </Each>
-                </Grid>
+        <DockPanel Alignment="Center">
+                <Panel Width="350" Height="350">
+                        <!-- Tiles -->
+                        <Grid RowCount="4" ColumnCount="4" CellSpacing="10" Margin="10">
+                                <Each Items="{tiles}" >
+                                        <Tile Column="{x}" Row="{y}" Color="{color}" Value="{value}" />
+                                </Each>
+                        </Grid>
 
-                <!-- Playfield -->
-                <Grid RowCount="4" ColumnCount="4" CellSpacing="10" Margin="10">
-                        <Each Count="4 * 4">
-                                <BackgroundTile />
-                        </Each>
-                </Grid>
-                <Rectangle CornerRadius="5" Color="#bbada0" />
+                        <!-- Playfield -->
+                        <Grid RowCount="4" ColumnCount="4" CellSpacing="10" Margin="10">
+                                <Each Count="4 * 4">
+                                        <BackgroundTile />
+                                </Each>
+                        </Grid>
+                        <Rectangle CornerRadius="5" Color="#bbada0" />
 
 
-                <!-- Gestures -->
+                        <!-- Gestures -->
 
-                <SwipeGesture ux:Name="swipeLeft" Direction="Left" Length="25" Type="Auto" />
-                <Swiped Source="swipeLeft" >
-                        <Callback Handler="{swipeLeft}" />
-                </Swiped>
+                        <SwipeGesture ux:Name="swipeLeft" Direction="Left" Length="25" Type="Auto" />
+                        <Swiped Source="swipeLeft" >
+                                <Callback Handler="{swipeLeft}" />
+                        </Swiped>
 
-                <SwipeGesture ux:Name="swipeRight" Direction="Right" Length="25" Type="Auto" />
-                <Swiped Source="swipeRight" >
-                        <Callback Handler="{swipeRight}" />
-                </Swiped>
+                        <SwipeGesture ux:Name="swipeRight" Direction="Right" Length="25" Type="Auto" />
+                        <Swiped Source="swipeRight" >
+                                <Callback Handler="{swipeRight}" />
+                        </Swiped>
 
-                <SwipeGesture ux:Name="swipeUp" Direction="Up" Length="25" Type="Auto" />
-                <Swiped Source="swipeUp" >
-                        <Callback Handler="{swipeUp}" />
-                </Swiped>
+                        <SwipeGesture ux:Name="swipeUp" Direction="Up" Length="25" Type="Auto" />
+                        <Swiped Source="swipeUp" >
+                                <Callback Handler="{swipeUp}" />
+                        </Swiped>
 
-                <SwipeGesture ux:Name="swipeDown" Direction="Down" Length="25" Type="Auto" />
-                <Swiped Source="swipeDown" >
-                        <Callback Handler="{swipeDown}" />
-                </Swiped>
-        </Panel>
+                        <SwipeGesture ux:Name="swipeDown" Direction="Down" Length="25" Type="Auto" />
+                        <Swiped Source="swipeDown" >
+                                <Callback Handler="{swipeDown}" />
+                        </Swiped>
+
+                </Panel>
+                <Rectangle Dock="Bottom" Color="White">
+                        <Text Value="New Game" />
+                        <Clicked>
+                                <Callback Handler="{newGame}" />
+                        </Clicked>
+                </Rectangle>
+        </DockPanel>
 </App>
