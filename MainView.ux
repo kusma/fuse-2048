@@ -147,7 +147,7 @@
                 };
         </JavaScript>
 
-        <Rectangle ux:Class="Tile" CornerRadius="3" />
+        <Rectangle ux:Class="Tile" CornerRadius="3" CachingMode="Never" />
         <Tile ux:Class="BackgroundTile" Color="#cdc1b4" />
 
         <Panel Width="350" Height="350">
