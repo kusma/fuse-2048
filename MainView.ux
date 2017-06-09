@@ -58,6 +58,7 @@
                         tiles.add({
                                 value: Observable(value), color : Observable(colorFromValue(value)), x : Observable(pos[0]), y : Observable(pos[1])
                         });
+                        grid[pos[1] * 4 + pos[0]] = tiles.length;
                 }
 
                 var grid = prepareGrid();
