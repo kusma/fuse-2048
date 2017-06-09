@@ -80,6 +80,7 @@
 
                         var moved = false;
                         var removeList = []; // collect removals until the end to not mess with indices
+                        var mergedNow = [];
                         x.forEach(function (x) {
                                 y.forEach(function (y) {
                                         var tileIndex = grid[y * 4 + x];
@@ -104,12 +105,13 @@
 
                                                 if (mx != nx || my != ny) {
                                                         var oldTileIndex = my * 4 + mx;
-                                                        if (grid[oldTileIndex] != -1) {
+                                                        if (grid[oldTileIndex] != -1 && !mergedNow.includes(tileIndex)) {
                                                                 var oldTile = tiles.getAt(grid[oldTileIndex]);
                                                                 if (tile.value.value === oldTile.value.value) {
                                                                         tile.value.value += oldTile.value.value;
                                                                         tile.color.value = colorFromValue(tile.value.value);
                                                                         removeList.push(oldTile);
+                                                                        mergedNow.push(tileIndex);
 
                                                                         nx = mx;
                                                                         ny = my;
