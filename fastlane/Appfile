@@ -1,0 +1,3 @@
+app_identifier "com.fusetools.2048" # The bundle identifier of your app
+apple_id "ci-build@outracks.com" # Your Apple email address
+team_id "K3P9TEQ2M4" # Developer Portal Team ID

@@ -1,0 +1,6 @@
+git_url "https://github.com/fusetools/fastlane-match.git"
+
+type "development" # The default type, can be: appstore, adhoc, enterprise or development
+
+app_identifier ["com.fusetools.2048"]
+username "ci-build@outracks.com"

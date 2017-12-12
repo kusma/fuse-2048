@@ -1,0 +1,17 @@
+language: objective-c
+osx_image: xcode9.2
+
+before_script:
+  - wget https://www.fusetools.com/downloads/latest/beta/osx -O fuse-installer.pkg &&
+    sudo installer -pkg fuse-installer.pkg -target /
+  - if [ -n "$TRAVIS_TAG" ]; then
+      export VERSION_TAG=${TRAVIS_TAG:1};
+    else
+      export VERSION_TAG=0.0.0-$TRAVIS_BRANCH;
+    fi
+
+script:
+  - uno build --configuration=Release --target=ios --no-native --out-dir=build-ios --set:Project.Version=$VERSION_TAG fuse-2048.unoproj
+  - if [ -n "$TRAVIS_TAG" ]; then
+      fastlane ios beta;
+    fi

@@ -1,5 +1,11 @@
 {
-  "RootNamespace":"",
+  "RootNamespace": "Fuse.2048",
+  "Name": "Fuse2048",
+  "Title": "Fuse 2048",
+  "iOS": {
+    "BundleIdentifier": "com.fusetools.2048",
+    "DevelopmentTeam": "K3P9TEQ2M4"
+  },
   "Packages": [
     "Fuse",
     "FuseJS"
