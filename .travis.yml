@@ -6,6 +6,7 @@ before_script:
     sudo installer -pkg fuse-installer.pkg -target /
   - if [ -n "$TRAVIS_TAG" ]; then
       export VERSION_TAG=${TRAVIS_TAG:1};
+      sudo gem install fastlane;
     else
       export VERSION_TAG=0.0.0-$TRAVIS_BRANCH;
     fi
